@@ -1,4 +1,4 @@
-import { RandomPathView } from "@/view/RandomPathView"
+import { RandomPointView } from "@/view/RandomPathView"
 import { Display } from "./Display"
 
 export type GameOpiton = { height: number, width: number, cntr: Element }
@@ -6,11 +6,13 @@ export type GameOpiton = { height: number, width: number, cntr: Element }
 
 export class Game {
 
-    option: GameOpiton
+    private option: GameOpiton
 
-    screen: Display = (null as any)
+    private screen: Display = (null as any)
 
-    view  = new RandomPathView()
+    private view = new RandomPointView()
+
+    private isRun = false
 
     constructor(option: GameOpiton) {
         this.option = option
@@ -22,28 +24,26 @@ export class Game {
         this.screen = new Display(this.option)
     }
 
+    private draw() {
+        if (!this.isRun) return
 
-    draw() {
-        this.view.path.forEach(({ control, point }) => {
-            this.screen.dot(control.trans(x => (x + 1) * 200), [255, 0, 0, 1])
-            this.screen.dot(point.trans(x => (x + 1) * 200), [0, 255, 0, 1])
-        })
+        this.screen.clear()
+
+        const point = this.view.next()
+        this.screen.dot(point.trans(
+            x => (x + 1) * this.option.width / 2,
+            x => (x + 1) * this.option.height / 2
+        ), [0, 0, 0, 0.3])
+
+        requestAnimationFrame(() => this.draw())
     }
 
-    async start() {
-        while (true) {
-            this.draw()
-            for (const p of this.view.createNextPath()) {
-                this.screen.dot(p.trans(x => (x + 1) * 200), [0, 0, 0, 0.3])
-                await this.wait()
-            }
-
-        }
+    start() {
+        this.isRun = true
+        this.draw()
     }
 
-    wait(timeout = 1000 / 60) {
-        return new Promise(res =>
-            setTimeout(() => { res(null) }, timeout)
-        )
+    stop() {
+        this.isRun = false
     }
 }

@@ -30,13 +30,17 @@ export class Display {
     }
 
 
-    dot(point: Point, color: [number, number, number, number] = [255, 255, 255, 0.3], size: number = 2) {
+    dot(point: Point, color: [number, number, number, number] = [255, 255, 255, 0.3], size: number = 10) {
         const ctx = this.ctx
 
         ctx.beginPath();
         ctx.arc(point.x, point.y, size, 0, Math.PI * 2, true);
         ctx.fillStyle = `rgba(${color.join(',')})`
         ctx.fill();
+    }
+
+    clear(){
+        this.ctx.clearRect(0,0,this.width,this.height)
     }
 
 }
