@@ -1,11 +1,11 @@
 import { Point } from '@/base/Point'
+import { ResImg } from '@/res/ResImg'
 import { GameOpiton } from './Game'
-
 export class Display {
     height: number
     width: number
     canvas = document.createElement('canvas')
-    cntr:Element
+    cntr: Element
     ctx: CanvasRenderingContext2D
 
     constructor(option: GameOpiton) {
@@ -30,7 +30,7 @@ export class Display {
     }
 
 
-    dot(point: Point, color: [number, number, number, number] = [255, 255, 255, 0.3], size: number = 10) {
+    dot(point: Point, color: [number, number, number, number] = [255, 255, 255, 0.3], size: number = 3) {
         const ctx = this.ctx
 
         ctx.beginPath();
@@ -39,11 +39,24 @@ export class Display {
         ctx.fill();
     }
 
-    clear(){
-        this.ctx.clearRect(0,0,this.width,this.height)
+    img(img: ResImg, p: Point, s: Point = new Point(1)) {
+        const ctx = this.ctx
+
+        ctx.drawImage(
+            img.img.get(),
+            p.x - img.width / 2 * s.x,
+            p.y - img.height / 2 * s.y,
+            s.x * img.width,
+            s.y * img.height
+        )
+    }
+
+    clear() {
+        // this.ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        // this.ctx.fillRect(0, 0, this.width, this.height);
+        this.ctx.clearRect(0, 0, this.width, this.height)
     }
 
 }
-
 
 
