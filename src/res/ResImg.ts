@@ -13,8 +13,8 @@ export class ImgLoadTask extends LoadTask<HTMLImageElement> {
 
         const img = new Image()
 
-        let resolve = (v: HTMLImageElement) => { }
-        let reject = (e: string | Event) => { }
+        let resolve = (_: HTMLImageElement) => { }
+        let reject = (_: string | Event) => { }
 
         this.onload = new Promise<HTMLImageElement>((res, rej) => {
             resolve = res
