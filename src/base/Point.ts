@@ -17,4 +17,8 @@ export class Point {
             this.y + ratio * (next.y - this.y)
         )
     }
+
+    add({ x, y }: Point) {
+        return new Point(this.x + x, this.y + y)
+    }
 }
