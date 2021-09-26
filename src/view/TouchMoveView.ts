@@ -37,7 +37,7 @@ export class TouchMoveView extends View {
         this.currentMoveEvent = e
     }
 
-    private over(e: TouchEvent) {
+    private over(_: TouchEvent) {
 
         // e.preventDefault()
 
