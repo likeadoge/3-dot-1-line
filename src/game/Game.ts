@@ -3,6 +3,7 @@ import { Display } from "./Display"
 import { ResImg } from '@/res/ResImg'
 import { Point } from "@/base/Point"
 import { TouchMoveView } from "@/view/TouchMoveView"
+import { TouchTimeView } from "@/view/TouchTimeView"
 
 export type GameOpiton = { height: number, width: number, cntr: Element }
 
@@ -13,14 +14,22 @@ export class Game {
 
     private screen: Display = (null as any)
 
+    // 目标靶位置
     private targetPosition = new RandomPointView()
 
+    // 照门相对于目标位置
     private sightPosition = new RandomPointView()
 
+    // 准星相对于照门位置
     private frontPosition = new RandomPointView()
 
-    private touchPosition = new TouchMoveView()
+    // 视角位置
+    private cameraPosition = new TouchMoveView()
 
+    // 点击状态
+    private touchTime = new TouchTimeView()
+
+    // 运行状态
     private isRun = false
 
     constructor(option: GameOpiton) {
@@ -29,10 +38,12 @@ export class Game {
         this.start()
     }
 
+    // 初始化视图
     private initScreen() {
         this.screen = new Display(this.option)
     }
 
+    // 绘制图像
     private draw() {
         if (!this.isRun) return
 
@@ -44,7 +55,7 @@ export class Game {
         )
 
         
-        const touch = this.touchPosition.getPoint()
+        const touch = this.cameraPosition.getPoint()
 
         this.screen.img(
             ResImg.files.target,
@@ -76,6 +87,8 @@ export class Game {
             [255, 0, 0, 0.7],
             4
         )
+
+        console.log(this.touchTime.num())
 
 
         requestAnimationFrame(() => this.draw())
