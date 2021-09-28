@@ -1,7 +1,29 @@
 import { Point } from '@/base/Point'
-import { View } from './View'
+import { State } from './State'
 
-export class RandomPointView extends View {
+export class RandomPathState extends State{
+    height = 2
+    width = 2
+
+    bottom = -1
+    top = 1
+    left = -1
+    right = 1
+
+    private centerPoint() {
+        return new Point(
+            (this.left + this.width) / 2,
+            (this.top + this.bottom) / 2,
+        )
+    }
+
+    private randomPoint() {
+        return new Point(
+            (this.left + Math.random() * (this.right - this.left)),
+            (this.top + Math.random() * (this.bottom - this.top)),
+        )
+    }
+
 
     // 当前生成路径的控制点
     private control: Point = null as any
@@ -12,7 +34,7 @@ export class RandomPointView extends View {
     // 当前点
     point: Point = null as any
     // 晃动速度
-    speed:number 
+    speed: number
 
     constructor(speed = 0.5) {
         super()

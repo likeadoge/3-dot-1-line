@@ -1,7 +1,7 @@
-import { View } from "./View";
+import { State } from "./State";
 import { Point } from "@/base/Point"
 
-export class TouchMoveView extends View {
+export class TouchMoveState extends State {
 
     private startMoveEvent: TouchEvent | null = null
     private currentMoveEvent: TouchEvent | null = null

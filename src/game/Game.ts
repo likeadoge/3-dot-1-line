@@ -1,9 +1,9 @@
-import { RandomPointView } from "@/view/RandomView"
+import { RandomPathState } from "@/state/RandomPathState"
 import { Display } from "./Display"
 import { ResImg } from '@/res/ResImg'
 import { Point } from "@/base/Point"
-import { TouchMoveView } from "@/view/TouchMoveView"
-import { TouchTimeView } from "@/view/TouchTimeView"
+import { TouchMoveState } from "@/state/TouchMoveState"
+import { TouchTimeState } from "@/state/TouchTimeState"
 
 export type GameOpiton = { height: number, width: number, cntr: Element }
 
@@ -15,19 +15,19 @@ export class Game {
     private screen: Display = (null as any)
 
     // 目标靶位置
-    private targetPosition = new RandomPointView()
+    private targetPosition = new RandomPathState()
 
     // 照门相对于目标位置
-    private sightPosition = new RandomPointView()
+    private sightPosition = new RandomPathState()
 
     // 准星相对于照门位置
-    private frontPosition = new RandomPointView()
+    private frontPosition = new RandomPathState()
 
     // 视角位置
-    private cameraPosition = new TouchMoveView()
+    private cameraPosition = new TouchMoveState()
 
     // 点击状态
-    private touchTime = new TouchTimeView()
+    private touchTime = new TouchTimeState()
 
     // 运行状态
     private isRun = false

@@ -1,4 +1,4 @@
-import { View } from "./View";
+import { State } from "./State";
 
 class TouchLink {
     // above?: TouchLink
@@ -36,7 +36,7 @@ class TouchLink {
 }
 
 
-export class TouchTimeView extends View {
+export class TouchTimeState extends State {
 
     private currentTouchTime: number = 0
     private touchsRecords?: TouchLink

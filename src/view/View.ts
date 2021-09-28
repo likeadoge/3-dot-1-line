@@ -1,4 +1,5 @@
-import {Point} from '@/base/Point'
+import { Point } from "@/base/Point"
+
 
 export class View {
     height = 2
