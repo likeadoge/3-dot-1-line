@@ -1,10 +1,11 @@
 import { RandomPathState } from "@/state/RandomPathState"
 import { Display } from "./Display"
-import { ResImg } from '@/res/ResImg'
+import { images } from '@/res/ResImg'
 import { Point } from "@/base/Point"
 import { TouchMoveState } from "@/state/TouchMoveState"
 import { TouchTimeState } from "@/state/TouchTimeState"
 import { StatusBarView } from "@/view/StatusBarView"
+import { BackSightView, FrontSightView } from "@/view/SightView"
 
 export type GameOpiton = { height: number, width: number, cntr: Element }
 
@@ -36,11 +37,17 @@ export class Game {
     // 姿势状态参数
     private statusBar: StatusBarView = null as any
 
+    private backSightView: BackSightView = null as any
+
+    private frontSightView: FrontSightView = null as any
+
     constructor(option: GameOpiton) {
         this.option = option
         this.initScreen()
 
         this.statusBar = new StatusBarView(this.screen)
+        this.backSightView = new BackSightView(this.screen)
+        this.frontSightView = new FrontSightView(this.screen)
 
         this.start()
     }
@@ -65,44 +72,38 @@ export class Game {
         const touch = this.cameraPosition.getPoint()
 
         this.screen.img(
-            ResImg.files.target,
+            images.target,
             target.add(touch),
             new Point(0.5)
         )
 
-        const sight = this.sightPosition.next().trans(
-            x => x * this.option.width / 2 / 100 + this.option.width / 2,
-            x => x * this.option.height / 2 / 100 + this.option.height / 2
+        const back = this.sightPosition.next().trans(
+            x => x * this.option.width / 2 / 100 *4 + this.option.width / 2,
+            x => x * this.option.height / 2 / 100 *4+ this.option.height / 2
         )
-
-
-        const front = sight.add(
+        const front = back.add(
             this.frontPosition.next().trans(
-                x => x * this.option.width / 2 / 100,
-                y => y * this.option.height / 2 / 100
+                x => x * this.option.width / 2 *2 / 100,
+                y => y * this.option.height / 2 *2/ 100
             )
         )
+        const num = this.touchTime.num()
 
         this.screen.dot(
             front,
             [0, 255, 0, 1],
             4
         )
-
-        this.screen.dot(
-            sight,
-            [255, 0, 0, 0.7],
-            4
-        )
-
-        this.statusBar.draw(this.touchTime.num())
+        this.frontSightView.draw(front,num)
+        this.backSightView.draw(back, num)
+        this.statusBar.draw(num)
 
         requestAnimationFrame(() => this.draw())
     }
 
     async start() {
         await Promise.all(
-            Array.from(Object.values(ResImg.files))
+            Array.from(Object.values(images))
                 .map((v: any) => v.onload)
         )
         this.isRun = true

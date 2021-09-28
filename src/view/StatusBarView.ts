@@ -1,5 +1,4 @@
 import { Display } from '@/game/Display'
-import { GameOpiton } from '@/game/Game'
 import { View } from './View'
 
 

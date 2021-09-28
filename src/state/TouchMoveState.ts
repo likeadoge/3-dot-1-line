@@ -51,7 +51,6 @@ export class TouchMoveState extends State {
             )
 
             this.cachePoint = this.cachePoint.add(current)
-            // console.log(this.cachePoint)
 
         }
 
@@ -67,8 +66,7 @@ export class TouchMoveState extends State {
                 this.currentMoveEvent.touches[0].clientX - this.startMoveEvent.touches[0].clientX,
                 this.currentMoveEvent.touches[0].clientY - this.startMoveEvent.touches[0].clientY
             )
-            console.log(current)
-
+            
             return current.add(this.cachePoint)
         }
 

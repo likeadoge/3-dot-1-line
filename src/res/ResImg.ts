@@ -34,10 +34,6 @@ export class ImgLoadTask extends LoadTask<HTMLImageElement> {
 
 export class ResImg extends Resource {
 
-    static files = {
-        target: new ResImg(new ImgLoadTask('/img/target.png'))
-    }
-
     img: ImgLoadTask
     height: number = 0
     width: number = 0
@@ -62,4 +58,12 @@ export class ResImg extends Resource {
             scaleX, scaleY
         )
     }
+}
+
+
+
+export const images = {
+    target: new ResImg(new ImgLoadTask('/img/target.png')),
+    backSight: new ResImg(new ImgLoadTask('/img/back.png')),
+    frontSight: new ResImg(new ImgLoadTask('/img/front.png'))
 }
