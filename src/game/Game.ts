@@ -4,6 +4,7 @@ import { ResImg } from '@/res/ResImg'
 import { Point } from "@/base/Point"
 import { TouchMoveState } from "@/state/TouchMoveState"
 import { TouchTimeState } from "@/state/TouchTimeState"
+import { StatusBarView } from "@/view/StatusBarView"
 
 export type GameOpiton = { height: number, width: number, cntr: Element }
 
@@ -32,9 +33,15 @@ export class Game {
     // 运行状态
     private isRun = false
 
+    // 姿势状态参数
+    private statusBar: StatusBarView = null as any
+
     constructor(option: GameOpiton) {
         this.option = option
         this.initScreen()
+
+        this.statusBar = new StatusBarView(this.screen)
+
         this.start()
     }
 
@@ -54,7 +61,7 @@ export class Game {
             y => y * this.option.height / 2 / 10 + this.option.height / 2,
         )
 
-        
+
         const touch = this.cameraPosition.getPoint()
 
         this.screen.img(
@@ -88,8 +95,7 @@ export class Game {
             4
         )
 
-        console.log(this.touchTime.num())
-
+        this.statusBar.draw(this.touchTime.num())
 
         requestAnimationFrame(() => this.draw())
     }

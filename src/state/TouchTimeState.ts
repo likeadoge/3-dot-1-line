@@ -80,15 +80,12 @@ export class TouchTimeState extends State {
         const t = new Date().getTime()
 
         if (this.currentTouchTime) {
-            console.log(1)
             const above = this.touchsRecords
                 ? this.touchsRecords.num(this.currentTouchTime)
                 : 0
 
             return TouchLink.up(this.currentTouchTime, t, above)
         } else {
-            
-            console.log(2)
             const above = this.touchsRecords
                 ? this.touchsRecords.num(t)
                 : 0
