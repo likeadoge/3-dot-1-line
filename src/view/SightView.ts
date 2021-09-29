@@ -30,7 +30,7 @@ export abstract class SightView extends View {
 
 
     private scale(num: number, p: Point): [number, number, number, number] {
-        const n = (num > 0.8 ? 0.8 : num) / 0.8
+        const n = num
         const s = (1 + n) / 3
         const width = this.width * s
         const height = this.height * s
@@ -40,7 +40,7 @@ export abstract class SightView extends View {
         return [left, top, width, height]
     }
     private down(num: number, p: Point) {
-        const n = (num > 0.8 ? 0.8 : num) / 0.8
+        const n = num
         return p.trans(x => x, y => y + 200 * (1 - n))
     }
 }

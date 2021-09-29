@@ -20,7 +20,7 @@ export class StatusBarView extends View {
     }
 
 
-    draw(len: number) {
+    draw(len: { focus: number, trigger: number }) {
         this.drawBG()
         this.drawBar(len)
         this.drawRound()
@@ -37,38 +37,20 @@ export class StatusBarView extends View {
     private drawBG() {
         const { screen } = this
         screen.ctx.fillStyle = "rgba(10, 160, 252, 0.2)"
-        screen.ctx.fillRect(this.left, this.top, this.width * 0.8, this.height)
+        screen.ctx.fillRect(this.left, this.top, this.width * 0.6, this.height)
 
         screen.ctx.fillStyle = "rgba(240, 62, 77, 0.2)"
-        screen.ctx.fillRect(this.left + this.width * 0.8, this.top, this.width * 0.2, this.height)
+        screen.ctx.fillRect(this.left + this.width * 0.6, this.top, this.width * 0.4, this.height)
     }
 
-    private drawBar(len: number) {
+    private drawBar({ focus, trigger }: { focus: number, trigger: number }) {
 
         const { screen } = this
+        screen.ctx.fillStyle = "rgba(10, 160, 252, 1)"
+        screen.ctx.fillRect(this.left, this.top, this.width * 0.6 * focus, this.height)
 
-        if (len > 0 && len < 0.8) {
-            screen.ctx.fillStyle = "rgba(10, 160, 252, 1)"
-            screen.ctx.fillRect(this.left, this.top, this.width * len, this.height)
-        }
-
-        if (len > 0.8 && len < 1) {
-            screen.ctx.fillStyle = "rgba(10, 160, 252, 1)"
-            screen.ctx.fillRect(this.left, this.top, this.width * 0.8, this.height)
-
-            screen.ctx.fillStyle = "rgba(240, 62, 77, 1)"
-            screen.ctx.fillRect(this.left + this.width * 0.8, this.top, this.width * (len - 0.8), this.height)
-        }
-
-        
-
-        if (len >= 1) {
-            screen.ctx.fillStyle = "rgba(10, 160, 252, 1)"
-            screen.ctx.fillRect(this.left, this.top, this.width * len * 0.8, this.height)
-
-            screen.ctx.fillStyle = "rgba(240, 62, 77, 1)"
-            screen.ctx.fillRect(this.left + this.width * 0.8, this.top, this.width * 0.2, this.height)
-        }
+        screen.ctx.fillStyle = "rgba(240, 62, 77, 1)"
+        screen.ctx.fillRect(this.left + this.width * 0.6, this.top, this.width * 0.4 * trigger, this.height)
 
     }
 

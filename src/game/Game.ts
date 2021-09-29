@@ -78,25 +78,25 @@ export class Game {
         )
 
         const back = this.sightPosition.next().trans(
-            x => x * this.option.width / 2 / 100 *4 + this.option.width / 2,
-            x => x * this.option.height / 2 / 100 *4+ this.option.height / 2
+            x => x * this.option.width / 2 / 100 * 4 + this.option.width / 2,
+            x => x * this.option.height / 2 / 100 * 4 + this.option.height / 2
         )
         const front = back.add(
             this.frontPosition.next().trans(
-                x => x * this.option.width / 2 *2 / 100,
-                y => y * this.option.height / 2 *2/ 100
+                x => x * this.option.width / 2 * 2 / 100,
+                y => y * this.option.height / 2 * 2 / 100
             )
         )
-        const num = this.touchTime.num()
+        const { focus,trigger } = this.touchTime.num()
 
         this.screen.dot(
             front,
             [0, 255, 0, 1],
             4
         )
-        this.frontSightView.draw(front,num)
-        this.backSightView.draw(back, num)
-        this.statusBar.draw(num)
+        this.frontSightView.draw(front, focus)
+        this.backSightView.draw(back, focus)
+        this.statusBar.draw({focus,trigger})
 
         requestAnimationFrame(() => this.draw())
     }
