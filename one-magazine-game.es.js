@@ -1,1 +1,498 @@
-var t=Object.defineProperty,e=(e,i,s)=>(((e,i,s)=>{i in e?t(e,i,{enumerable:!0,configurable:!0,writable:!0,value:s}):e[i]=s})(e,"symbol"!=typeof i?i+"":i,s),s);class i{constructor(t,i=t){e(this,"x",0),e(this,"y",0),this.x=t,this.y=i}trans(t,e=t){return new i(t(this.x),e(this.y))}goto(t,e){return new i(this.x+e*(t.x-this.x),this.y+e*(t.y-this.y))}add({x:t,y:e}){return new i(this.x+t,this.y+e)}}class s{constructor(){e(this,"height",2),e(this,"width",2),e(this,"bottom",-1),e(this,"top",1),e(this,"left",-1),e(this,"right",1)}centerPoint(){return new i((this.left+this.width)/2,(this.top+this.bottom)/2)}randomPoint(){return new i(this.left+Math.random()*(this.right-this.left),this.top+Math.random()*(this.bottom-this.top))}}class h extends s{constructor(t=.5){super(),e(this,"control",null),e(this,"target",null),e(this,"path",[]),e(this,"point",null),e(this,"speed");const s=Math.random()*(this.right-this.left)+this.left,h=Math.random()*(this.top-this.bottom)+this.bottom;this.speed=t,this.control=[new i(s,this.bottom),new i(s,this.top),new i(this.left,h),new i(this.right,h)][Math.floor(4*Math.random())],this.target=this.centerPoint()}createNextPath(){const t=this.target,e=this.control,s=t.x-e.x,h=s>0?this.right:this.left,n=t.y-e.y,o=n>0?this.top:this.bottom,r=new i(h,(h-t.x)/s*n+t.y),c=new i((o-t.y)/n*s+t.x,o),a=r.y>=this.bottom&&r.y<=this.top?r:c;let u=this.randomPoint();for(;u.x**2+u.y**2>1;)u=this.randomPoint();this.control=a,this.target=u,this.path=this.besier2(t,a,u).reverse()}besier2(t,e,i){const s=100/this.speed,h=[];for(let n=0;n<=s;n++){const o=n/s,r=t.goto(e,o),c=e.goto(i,o),a=r.goto(c,o);h.push(a)}return h}next(){for(;0===this.path.length;)this.createNextPath();const t=this.path.pop();if(!t)throw new Error("create next point error!");return this.point=t,t}}class n{constructor(t){e(this,"height"),e(this,"width"),e(this,"canvas",document.createElement("canvas")),e(this,"cntr"),e(this,"ctx"),this.height=t.height,this.width=t.width,this.cntr=t.cntr,this.canvas.height=this.height,this.canvas.width=this.width,console.log(this.cntr),this.cntr.appendChild(this.canvas);const i=this.canvas.getContext("2d");if(!i)throw new Error("ctx is null !!!");this.ctx=i}dot(t,e=[255,255,255,.3],i=3){const s=this.ctx;s.beginPath(),s.arc(t.x,t.y,i,0,2*Math.PI,!0),s.fillStyle=`rgba(${e.join(",")})`,s.fill()}img(t,e,s=new i(1)){this.ctx.drawImage(t.img.get(),e.x-t.width/2*s.x,e.y-t.height/2*s.y,s.x*t.width,s.y*t.height)}clear(){this.ctx.clearRect(0,0,this.width,this.height)}}class o{constructor(){e(this,"val","unfinish"),e(this,"onload",new Promise((()=>{})))}get(){if("unfinish"===this.val)throw new Error("Resource is unfinished!");return this.val}}e(o,"unfinish","unfinish!");const r=class extends class{}{constructor(t){super(),e(this,"img"),e(this,"height",0),e(this,"width",0),e(this,"onload"),this.img=t,this.img.onload.then((()=>{this.height=t.height,this.width=t.width})),this.onload=this.img.onload}draw(t,e,i=1,s=i){t.ctx.drawImage(this.img.get(),e.x-this.width/2*i,e.y-this.height/2*s,i,s)}};let c=r;e(c,"files",{target:new r(new class extends o{constructor(t){super(),e(this,"height",0),e(this,"width",0);const i=new Image;let s=t=>{},h=t=>{};this.onload=new Promise(((t,e)=>{s=t,h=e})),this.onload.then((t=>{this.val=t,this.height=t.height,this.width=t.width})),i.src=t,i.onload=()=>{s(i)},i.onerror=t=>{h(t)}}}("/img/target.png"))});class a extends s{constructor(){super(),e(this,"startMoveEvent",null),e(this,"currentMoveEvent",null),e(this,"cachePoint",new i(0,0));const t=document.querySelector("#app");if(!(t&&t instanceof HTMLElement))throw new Error;this.startMoveEvent=null,this.currentMoveEvent=null,t.addEventListener("touchstart",(t=>this.start(t))),t.addEventListener("touchmove",(t=>this.move(t))),t.addEventListener("touchend",(t=>this.over(t))),t.addEventListener("touchcancel",(t=>this.over(t)))}start(t){t.preventDefault()}move(t){t.preventDefault(),this.startMoveEvent||(this.startMoveEvent=t),this.currentMoveEvent=t}over(t){if(this.currentMoveEvent&&this.startMoveEvent){const t=new i(this.currentMoveEvent.touches[0].clientX-this.startMoveEvent.touches[0].clientX,this.currentMoveEvent.touches[0].clientY-this.startMoveEvent.touches[0].clientY);this.cachePoint=this.cachePoint.add(t)}this.startMoveEvent=null}getPoint(){if(this.currentMoveEvent&&this.startMoveEvent){const t=new i(this.currentMoveEvent.touches[0].clientX-this.startMoveEvent.touches[0].clientX,this.currentMoveEvent.touches[0].clientY-this.startMoveEvent.touches[0].clientY);return console.log(t),t.add(this.cachePoint)}return this.cachePoint}}class u{constructor(t,i,s){e(this,"above"),e(this,"start"),e(this,"end"),e(this,"up"),this.start=t,this.end=i,this.above=s?s.num(this.start):0,this.up=u.up(this.start,this.end,this.above)}static up(t,e,i){const s=8e-4*(e-t)+i;return s>=1?1:s}static down(t,e){return.001*(t-e)}num(t=(new Date).getTime()){const e=this.up-u.down(t,this.end);return e>0?e:0}}class l extends s{constructor(){super(),e(this,"currentTouchTime",0),e(this,"touchsRecords");const t=document.querySelector("#app");if(!(t&&t instanceof HTMLElement))throw new Error;t.addEventListener("touchstart",(t=>this.start(t))),t.addEventListener("touchmove",(t=>this.move(t))),t.addEventListener("touchend",(t=>this.over(t))),t.addEventListener("touchcancel",(t=>this.over(t)))}start(t){t.preventDefault(),this.currentTouchTime=(new Date).getTime()}move(t){t.preventDefault()}over(t){this.currentTouchTime&&(this.touchsRecords=new u(this.currentTouchTime,(new Date).getTime(),this.touchsRecords)),this.currentTouchTime=0}num(){const t=(new Date).getTime();if(this.currentTouchTime){console.log(1);const e=this.touchsRecords?this.touchsRecords.num(this.currentTouchTime):0;return u.up(this.currentTouchTime,t,e)}console.log(2);return this.touchsRecords?this.touchsRecords.num(t):0}}class d{constructor(t){e(this,"option"),e(this,"screen",null),e(this,"targetPosition",new h),e(this,"sightPosition",new h),e(this,"frontPosition",new h),e(this,"cameraPosition",new a),e(this,"touchTime",new l),e(this,"isRun",!1),this.option=t,this.initScreen(),this.start()}initScreen(){this.screen=new n(this.option)}draw(){if(!this.isRun)return;this.screen.clear();const t=this.targetPosition.next().trans((t=>t*this.option.width/2/10+this.option.width/2),(t=>t*this.option.height/2/10+this.option.height/2)),e=this.cameraPosition.getPoint();this.screen.img(c.files.target,t.add(e),new i(.5));const s=this.sightPosition.next().trans((t=>t*this.option.width/2/100+this.option.width/2),(t=>t*this.option.height/2/100+this.option.height/2)),h=s.add(this.frontPosition.next().trans((t=>t*this.option.width/2/100),(t=>t*this.option.height/2/100)));this.screen.dot(h,[0,255,0,1],4),this.screen.dot(s,[255,0,0,.7],4),console.log(this.touchTime.num()),requestAnimationFrame((()=>this.draw()))}async start(){await Promise.all(Array.from(Object.values(c.files)).map((t=>t.onload))),this.isRun=!0,this.draw()}stop(){this.isRun=!1}}const m=class{constructor(){if(e(this,"device",{mode:"pc",width:360,height:640}),e(this,"game",null),e(this,"element",null),m.main)return m.main;this.initDeviceInfo(),this.initElement(),this.initGame()}initDeviceInfo(){const{width:t,height:e}=document.body.getClientRects()[0],i=e>t&&t>320?"mobile":"pc";console.log(i),this.device={width:t,mode:i,height:e}}initGame(){const{width:t,height:e}="mobile"===this.device.mode?this.device:{width:360,height:640},i=this.element;this.game=new d({width:t,height:e,cntr:i})}initElement(){this.element=document.createElement("div"),this.element.id="app",this.element.dataset.mode=this.device.mode,document.body.appendChild(this.element)}onLog(t){t("game init!")}};let v=m;e(v,"main",new m),v.main.onLog((t=>console.log(t)));
+var __defProp = Object.defineProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField = (obj, key, value) => {
+  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+class Point {
+  constructor(x, y = x) {
+    __publicField(this, "x", 0);
+    __publicField(this, "y", 0);
+    this.x = x;
+    this.y = y;
+  }
+  trans(fnx, fny = fnx) {
+    return new Point(fnx(this.x), fny(this.y));
+  }
+  goto(next, ratio) {
+    return new Point(this.x + ratio * (next.x - this.x), this.y + ratio * (next.y - this.y));
+  }
+  add({ x, y }) {
+    return new Point(this.x + x, this.y + y);
+  }
+}
+class State {
+}
+class RandomPathState extends State {
+  constructor(speed = 0.5) {
+    super();
+    __publicField(this, "height", 2);
+    __publicField(this, "width", 2);
+    __publicField(this, "bottom", -1);
+    __publicField(this, "top", 1);
+    __publicField(this, "left", -1);
+    __publicField(this, "right", 1);
+    __publicField(this, "control", null);
+    __publicField(this, "target", null);
+    __publicField(this, "path", []);
+    __publicField(this, "point", null);
+    __publicField(this, "speed");
+    const x = Math.random() * (this.right - this.left) + this.left;
+    const y = Math.random() * (this.top - this.bottom) + this.bottom;
+    this.speed = speed;
+    this.control = [
+      new Point(x, this.bottom),
+      new Point(x, this.top),
+      new Point(this.left, y),
+      new Point(this.right, y)
+    ][Math.floor(Math.random() * 4)];
+    this.target = this.centerPoint();
+  }
+  centerPoint() {
+    return new Point((this.left + this.width) / 2, (this.top + this.bottom) / 2);
+  }
+  randomPoint() {
+    return new Point(this.left + Math.random() * (this.right - this.left), this.top + Math.random() * (this.bottom - this.top));
+  }
+  createNextPath() {
+    const preTarget = this.target;
+    const preControl = this.control;
+    const rX = preTarget.x - preControl.x;
+    const xEdge = rX > 0 ? this.right : this.left;
+    const rY = preTarget.y - preControl.y;
+    const yEdge = rY > 0 ? this.top : this.bottom;
+    const pX = new Point(xEdge, (xEdge - preTarget.x) / rX * rY + preTarget.y);
+    const pY = new Point((yEdge - preTarget.y) / rY * rX + preTarget.x, yEdge);
+    const control = pX.y >= this.bottom && pX.y <= this.top ? pX : pY;
+    let target = this.randomPoint();
+    while (target.x ** 2 + target.y ** 2 > 1) {
+      target = this.randomPoint();
+    }
+    this.control = control;
+    this.target = target;
+    this.path = this.besier2(preTarget, control, target).reverse();
+  }
+  besier2(d0, d1, d2) {
+    const step = 100 / this.speed;
+    const line = [];
+    for (let current = 0; current <= step; current++) {
+      const ratio = current / step;
+      const p0 = d0.goto(d1, ratio);
+      const p1 = d1.goto(d2, ratio);
+      const target = p0.goto(p1, ratio);
+      line.push(target);
+    }
+    return line;
+  }
+  next() {
+    while (this.path.length === 0) {
+      this.createNextPath();
+    }
+    const point = this.path.pop();
+    if (!point)
+      throw new Error("create next point error!");
+    this.point = point;
+    return point;
+  }
+}
+class Display {
+  constructor(option) {
+    __publicField(this, "height");
+    __publicField(this, "width");
+    __publicField(this, "canvas", document.createElement("canvas"));
+    __publicField(this, "cntr");
+    __publicField(this, "ctx");
+    this.height = option.height;
+    this.width = option.width;
+    this.cntr = option.cntr;
+    this.canvas.height = this.height;
+    this.canvas.width = this.width;
+    console.log(this.cntr);
+    this.cntr.appendChild(this.canvas);
+    const ctx = this.canvas.getContext("2d");
+    if (!ctx)
+      throw new Error("ctx is null !!!");
+    else
+      this.ctx = ctx;
+  }
+  dot(point, color = [255, 255, 255, 0.3], size = 3) {
+    const ctx = this.ctx;
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, size, 0, Math.PI * 2, true);
+    ctx.fillStyle = `rgba(${color.join(",")})`;
+    ctx.fill();
+  }
+  img(img, p, s = new Point(1)) {
+    const ctx = this.ctx;
+    ctx.drawImage(img.img.get(), p.x - img.width / 2 * s.x, p.y - img.height / 2 * s.y, s.x * img.width, s.y * img.height);
+  }
+  clear() {
+    this.ctx.clearRect(0, 0, this.width, this.height);
+  }
+}
+class LoadTask {
+  constructor() {
+    __publicField(this, "val", "unfinish");
+    __publicField(this, "onload", new Promise(() => {
+    }));
+  }
+  get() {
+    if (this.val === "unfinish")
+      throw new Error("Resource is unfinished!");
+    else
+      return this.val;
+  }
+}
+__publicField(LoadTask, "unfinish", "unfinish!");
+class Resource {
+}
+class ImgLoadTask extends LoadTask {
+  constructor(src) {
+    super();
+    __publicField(this, "height", 0);
+    __publicField(this, "width", 0);
+    const img = new Image();
+    let resolve = (_) => {
+    };
+    let reject = (_) => {
+    };
+    this.onload = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+    this.onload.then((img2) => {
+      this.val = img2;
+      this.height = img2.height;
+      this.width = img2.width;
+    });
+    img.src = src;
+    img.onload = () => {
+      resolve(img);
+    };
+    img.onerror = (e) => {
+      reject(e);
+    };
+  }
+}
+class ResImg extends Resource {
+  constructor(img) {
+    super();
+    __publicField(this, "img");
+    __publicField(this, "height", 0);
+    __publicField(this, "width", 0);
+    __publicField(this, "onload");
+    this.img = img;
+    this.img.onload.then(() => {
+      this.height = img.height;
+      this.width = img.width;
+    });
+    this.onload = this.img.onload;
+  }
+  draw(screen, p, scaleX = 1, scaleY = scaleX) {
+    screen.ctx.drawImage(this.img.get(), p.x - this.width / 2 * scaleX, p.y - this.height / 2 * scaleY, scaleX, scaleY);
+  }
+}
+const images = {
+  target: new ResImg(new ImgLoadTask("/img/target.png")),
+  backSight: new ResImg(new ImgLoadTask("/img/back.png")),
+  frontSight: new ResImg(new ImgLoadTask("/img/front.png"))
+};
+class TouchMoveState extends State {
+  constructor() {
+    super();
+    __publicField(this, "startMoveEvent", null);
+    __publicField(this, "currentMoveEvent", null);
+    __publicField(this, "cachePoint", new Point(0, 0));
+    const app = document.querySelector("#app");
+    if (!app || !(app instanceof HTMLElement))
+      throw new Error();
+    this.startMoveEvent = null;
+    this.currentMoveEvent = null;
+    app.addEventListener("touchstart", (e) => this.start(e));
+    app.addEventListener("touchmove", (e) => this.move(e));
+    app.addEventListener("touchend", (e) => this.over(e));
+    app.addEventListener("touchcancel", (e) => this.over(e));
+  }
+  start(e) {
+    e.preventDefault();
+  }
+  move(e) {
+    e.preventDefault();
+    if (!this.startMoveEvent)
+      this.startMoveEvent = e;
+    this.currentMoveEvent = e;
+  }
+  over(_) {
+    if (this.currentMoveEvent && this.startMoveEvent) {
+      const current = new Point(this.currentMoveEvent.touches[0].clientX - this.startMoveEvent.touches[0].clientX, this.currentMoveEvent.touches[0].clientY - this.startMoveEvent.touches[0].clientY);
+      this.cachePoint = this.cachePoint.add(current);
+    }
+    this.startMoveEvent = null;
+  }
+  getPoint() {
+    if (this.currentMoveEvent && this.startMoveEvent) {
+      const current = new Point(this.currentMoveEvent.touches[0].clientX - this.startMoveEvent.touches[0].clientX, this.currentMoveEvent.touches[0].clientY - this.startMoveEvent.touches[0].clientY);
+      return current.add(this.cachePoint);
+    } else
+      return this.cachePoint;
+  }
+}
+class TouchLink {
+  constructor(start, end, above) {
+    __publicField(this, "above");
+    __publicField(this, "start");
+    __publicField(this, "end");
+    __publicField(this, "up");
+    this.start = start;
+    this.end = end;
+    this.above = above ? above.num(this.start) : 0;
+    this.up = TouchLink.up(this.start, this.end, this.above);
+  }
+  static up(start, end, above) {
+    const up = (end - start) * 8e-4 + above;
+    return up >= 1 ? 1 : up;
+  }
+  static down(cur, end) {
+    return (cur - end) * 1e-3;
+  }
+  num(t = new Date().getTime()) {
+    const up = this.up;
+    const down = TouchLink.down(t, this.end);
+    const res = up - down;
+    return res > 0 ? res : 0;
+  }
+}
+class TouchTimeState extends State {
+  constructor() {
+    super();
+    __publicField(this, "currentTouchTime", 0);
+    __publicField(this, "touchsRecords");
+    const app = document.querySelector("#app");
+    if (!app || !(app instanceof HTMLElement))
+      throw new Error();
+    app.addEventListener("touchstart", (e) => this.onstart(e));
+    app.addEventListener("touchmove", (e) => this.onmove(e));
+    app.addEventListener("touchend", (e) => this.onover(e));
+    app.addEventListener("touchcancel", (e) => this.onover(e));
+  }
+  onstart(e) {
+    e.preventDefault();
+    this.currentTouchTime = new Date().getTime();
+  }
+  onmove(e) {
+    e.preventDefault();
+  }
+  onover(_) {
+    if (this.currentTouchTime) {
+      this.touchsRecords = new TouchLink(this.currentTouchTime, new Date().getTime(), this.touchsRecords);
+    }
+    this.currentTouchTime = 0;
+  }
+  value() {
+    const t = new Date().getTime();
+    if (this.currentTouchTime) {
+      const above = this.touchsRecords ? this.touchsRecords.num(this.currentTouchTime) : 0;
+      return TouchLink.up(this.currentTouchTime, t, above);
+    } else {
+      const above = this.touchsRecords ? this.touchsRecords.num(t) : 0;
+      return above;
+    }
+  }
+  num() {
+    const n = this.value();
+    const t = n < 0.5 ? 0 : n - 0.5;
+    const f = n < 0.5 ? n : 0.5;
+    const trigger = (t * 2) ** 3;
+    const focus = (f * 2) ** 3;
+    return { trigger, focus };
+  }
+}
+class View {
+  constructor(screen) {
+    __publicField(this, "height", 2);
+    __publicField(this, "width", 2);
+    __publicField(this, "bottom", 1);
+    __publicField(this, "top", -1);
+    __publicField(this, "left", -1);
+    __publicField(this, "right", 1);
+    __publicField(this, "centerPoint", new Point((this.left + this.width) / 2, (this.top + this.bottom) / 2));
+    __publicField(this, "screen");
+    this.screen = screen;
+  }
+  randomPoint() {
+    return new Point(this.left + Math.random() * (this.right - this.left), this.top + Math.random() * (this.bottom - this.top));
+  }
+  updateWidth() {
+    this.width = this.right - this.left;
+  }
+  updateHeight() {
+    this.height = this.bottom - this.top;
+  }
+  setCenter(point) {
+    this.centerPoint = point;
+  }
+}
+class StatusBarView extends View {
+  constructor(screen) {
+    super(screen);
+    const option = this.screen;
+    this.left = 30;
+    this.right = option.width - 30;
+    this.updateWidth();
+    this.top = 30;
+    this.bottom = 40;
+    this.updateHeight();
+  }
+  draw(len) {
+    this.drawBG();
+    this.drawBar(len);
+    this.drawRound();
+  }
+  drawRound() {
+    const { screen } = this;
+    screen.ctx.lineJoin = "round";
+    screen.ctx.lineWidth = 2;
+    screen.ctx.strokeRect(this.left, this.top, this.width, this.height);
+  }
+  drawBG() {
+    const { screen } = this;
+    screen.ctx.fillStyle = "rgba(10, 160, 252, 0.2)";
+    screen.ctx.fillRect(this.left, this.top, this.width * 0.6, this.height);
+    screen.ctx.fillStyle = "rgba(240, 62, 77, 0.2)";
+    screen.ctx.fillRect(this.left + this.width * 0.6, this.top, this.width * 0.4, this.height);
+  }
+  drawBar({ focus, trigger }) {
+    const { screen } = this;
+    screen.ctx.fillStyle = "rgba(10, 160, 252, 1)";
+    screen.ctx.fillRect(this.left, this.top, this.width * 0.6 * focus, this.height);
+    screen.ctx.fillStyle = "rgba(240, 62, 77, 1)";
+    screen.ctx.fillRect(this.left + this.width * 0.6, this.top, this.width * 0.4 * trigger, this.height);
+  }
+}
+class SightView extends View {
+  constructor(screen) {
+    super(screen);
+    this.left = 0;
+    this.right = 400;
+    this.updateWidth();
+    this.top = 0;
+    this.bottom = 800;
+    this.updateHeight();
+    this.setCenter(new Point(200, 400));
+  }
+  draw(point, num) {
+    this.screen.ctx.drawImage(this.img.img.get(), ...this.scale(num, this.down(num, point)));
+  }
+  scale(num, p) {
+    const n = num;
+    const s = (1 + n) / 3;
+    const width = this.width * s;
+    const height = this.height * s;
+    const left = p.x - width / 2;
+    const top = p.y - height / 2;
+    return [left, top, width, height];
+  }
+  down(num, p) {
+    const n = num;
+    return p.trans((x) => x, (y) => y + 200 * (1 - n));
+  }
+}
+class FrontSightView extends SightView {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "img", images.frontSight);
+  }
+}
+class BackSightView extends SightView {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "img", images.backSight);
+  }
+}
+class Game {
+  constructor(option) {
+    __publicField(this, "option");
+    __publicField(this, "screen", null);
+    __publicField(this, "targetPosition", new RandomPathState());
+    __publicField(this, "sightPosition", new RandomPathState());
+    __publicField(this, "frontPosition", new RandomPathState());
+    __publicField(this, "cameraPosition", new TouchMoveState());
+    __publicField(this, "touchTime", new TouchTimeState());
+    __publicField(this, "isRun", false);
+    __publicField(this, "statusBar", null);
+    __publicField(this, "backSightView", null);
+    __publicField(this, "frontSightView", null);
+    this.option = option;
+    this.initScreen();
+    this.statusBar = new StatusBarView(this.screen);
+    this.backSightView = new BackSightView(this.screen);
+    this.frontSightView = new FrontSightView(this.screen);
+    this.start();
+  }
+  initScreen() {
+    this.screen = new Display(this.option);
+  }
+  draw() {
+    if (!this.isRun)
+      return;
+    this.screen.clear();
+    const target = this.targetPosition.next().trans((x) => x * this.option.width / 2 / 10 + this.option.width / 2, (y) => y * this.option.height / 2 / 10 + this.option.height / 2);
+    const touch = this.cameraPosition.getPoint();
+    this.screen.img(images.target, target.add(touch), new Point(0.5));
+    const back = this.sightPosition.next().trans((x) => x * this.option.width / 2 / 100 * 4 + this.option.width / 2, (x) => x * this.option.height / 2 / 100 * 4 + this.option.height / 2);
+    const front = back.add(this.frontPosition.next().trans((x) => x * this.option.width / 2 * 2 / 100, (y) => y * this.option.height / 2 * 2 / 100));
+    const { focus, trigger } = this.touchTime.num();
+    this.screen.dot(front, [0, 255, 0, 1], 4);
+    this.frontSightView.draw(front, focus);
+    this.backSightView.draw(back, focus);
+    this.statusBar.draw({ focus, trigger });
+    requestAnimationFrame(() => this.draw());
+  }
+  async start() {
+    await Promise.all(Array.from(Object.values(images)).map((v) => v.onload));
+    this.isRun = true;
+    this.draw();
+  }
+  stop() {
+    this.isRun = false;
+  }
+}
+const _App = class {
+  constructor() {
+    __publicField(this, "device", {
+      mode: "pc",
+      width: 360,
+      height: 640
+    });
+    __publicField(this, "game", null);
+    __publicField(this, "element", null);
+    if (_App.main)
+      return _App.main;
+    this.initDeviceInfo();
+    this.initElement();
+    this.initGame();
+  }
+  initDeviceInfo() {
+    const { width, height } = document.body.getClientRects()[0];
+    const mode = height > width && width > 320 ? "mobile" : "pc";
+    console.log(mode);
+    this.device = { width, mode, height };
+  }
+  initGame() {
+    const { width, height } = this.device.mode === "mobile" ? this.device : { width: 360, height: 640 };
+    const cntr = this.element;
+    this.game = new Game({ width, height, cntr });
+  }
+  initElement() {
+    this.element = document.createElement("div");
+    this.element.id = "app";
+    this.element.dataset.mode = this.device.mode;
+    document.body.appendChild(this.element);
+  }
+  onLog(fn) {
+    fn("game init!");
+  }
+};
+let App = _App;
+__publicField(App, "main", new _App());
+App.main.onLog((msg) => console.log(msg));
