@@ -10,7 +10,7 @@
     "test": "jest",
     "test-c": "jest --coverage",
     "build": "tsc && vite build",
-    "serve": "tsc && vite build && node ./serve/app.js"
+    "serve": "node ./serve/app.js"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",

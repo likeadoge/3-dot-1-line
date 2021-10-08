@@ -1,6 +1,6 @@
 FROM node:latest
 COPY . /app/
 WORKDIR /app
-RUN npm install 
+RUN yarn install && yarn build 
 EXPOSE 3000
-CMD ["npm","run","dev"]
+CMD ["npm","run","serve"]
