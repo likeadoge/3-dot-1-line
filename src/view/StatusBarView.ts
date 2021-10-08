@@ -45,12 +45,11 @@ export class StatusBarView extends View {
 
         const { screen } = this
 
-        screen.ctx.fillStyle = "rgba(240, 62, 77, 1)"
+        screen.ctx.fillStyle = "rgba(240, 62, 77, 0.6)"
         screen.ctx.fillRect(this.left, this.top, this.width * focus, this.height)
         
-        screen.ctx.fillStyle = "rgba(10, 160, 252, 1)"
+        screen.ctx.fillStyle = "rgba(240, 62, 77, 1)"
         screen.ctx.fillRect(this.left, this.top, this.width * trigger, this.height)
-        
     }
 
 
