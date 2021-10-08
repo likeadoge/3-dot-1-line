@@ -36,22 +36,21 @@ export class StatusBarView extends View {
 
     private drawBG() {
         const { screen } = this
-        screen.ctx.fillStyle = "rgba(10, 160, 252, 0.2)"
-        screen.ctx.fillRect(this.left, this.top, this.width * 0.6, this.height)
 
         screen.ctx.fillStyle = "rgba(240, 62, 77, 0.2)"
-        screen.ctx.fillRect(this.left + this.width * 0.6, this.top, this.width * 0.4, this.height)
+        screen.ctx.fillRect(this.left, this.top, this.width, this.height)
     }
 
     private drawBar({ focus, trigger }: { focus: number, trigger: number }) {
 
         const { screen } = this
-        screen.ctx.fillStyle = "rgba(10, 160, 252, 1)"
-        screen.ctx.fillRect(this.left, this.top, this.width * 0.6 * focus, this.height)
 
         screen.ctx.fillStyle = "rgba(240, 62, 77, 1)"
-        screen.ctx.fillRect(this.left + this.width * 0.6, this.top, this.width * 0.4 * trigger, this.height)
-
+        screen.ctx.fillRect(this.left, this.top, this.width * focus, this.height)
+        
+        screen.ctx.fillStyle = "rgba(10, 160, 252, 1)"
+        screen.ctx.fillRect(this.left, this.top, this.width * trigger, this.height)
+        
     }
 
 
