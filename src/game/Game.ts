@@ -6,6 +6,7 @@ import { TouchMoveState } from "@/state/TouchMoveState"
 import { TouchTimeState } from "@/state/TouchTimeState"
 import { StatusBarView } from "@/view/StatusBarView"
 import { BackSightView, FrontSightView } from "@/view/SightView"
+import { Sence } from "@/sence"
 
 export type GameOpiton = { height: number, width: number, cntr: Element }
 
@@ -41,10 +42,21 @@ export class Game {
 
     private frontSightView: FrontSightView = null as any
 
+    // 场景
+    private sence: Sence = null as any
+
+    private fps: {
+        count: number, time: number
+    } = {
+            count: 0, time: new Date().getTime()
+        }
+
+
     constructor(option: GameOpiton) {
         this.option = option
         this.initScreen()
-
+        this.initSence()
+        this.initFPS()
         this.statusBar = new StatusBarView(this.screen)
         this.backSightView = new BackSightView(this.screen)
         this.frontSightView = new FrontSightView(this.screen)
@@ -57,11 +69,34 @@ export class Game {
         this.screen = new Display(this.option)
     }
 
+    private initSence() {
+        this.sence = new Sence(this.option.height, this.option.width)
+    }
+
+    private initFPS() {
+
+        const fn = () => {
+            const current = new Date().getTime()
+            if (current === this.fps.time) return
+            const dur = current - this.fps.time
+            console.log(this.fps.count / dur * 1000)
+            this.fps.time = current
+            this.fps.count = 0
+        }
+
+        setInterval(fn, 2000)
+
+    }
+
     // 绘制图像
     private draw() {
         if (!this.isRun) return
 
+        this.fps.count++
+
         this.screen.clear()
+
+        // this.screen.pixel((left: number, top: number) => this.sence.render(left, top))
 
         const target = this.targetPosition.next().trans(
             x => x * this.option.width / 2 / 10 + this.option.width / 2,
@@ -87,7 +122,7 @@ export class Game {
                 y => y * this.option.height / 2 * 2 / 100
             )
         )
-        const { focus,trigger } = this.touchTime.num()
+        const { focus, trigger } = this.touchTime.num()
 
         this.screen.dot(
             front,
@@ -96,7 +131,7 @@ export class Game {
         )
         this.frontSightView.draw(front, focus)
         this.backSightView.draw(back, focus)
-        this.statusBar.draw({focus,trigger})
+        this.statusBar.draw({ focus, trigger })
 
         requestAnimationFrame(() => this.draw())
     }

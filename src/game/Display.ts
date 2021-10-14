@@ -7,7 +7,9 @@ export class Display {
     canvas = document.createElement('canvas')
     cntr: Element
     ctx: CanvasRenderingContext2D
+    imageData: ImageData
 
+ 
     constructor(option: GameOpiton) {
         this.height = option.height
         this.width = option.width
@@ -16,16 +18,32 @@ export class Display {
         this.canvas.height = this.height
         this.canvas.width = this.width
 
-        console.log(this.cntr)
-
         this.cntr.appendChild(this.canvas)
 
         const ctx = this.canvas.getContext('2d')
 
         if (!ctx)
             throw new Error('ctx is null !!!')
-        else
+        else {
             this.ctx = ctx
+            this.imageData = ctx.createImageData(this.width, this.height)
+        }
+    }
+
+
+    pixel(render: (left: number, top: number) => [number, number, number]) {
+
+        for (let top = 0; top < this.height; top++) {
+            for (let left = 0; left < this.width; left++) {
+                const [r, g, b] = render(left, top)
+                this.imageData.data[((top * (this.width * 4)) + (left * 4))] = r
+                this.imageData.data[((top * (this.width * 4)) + (left * 4)) + 1] = g
+                this.imageData.data[((top * (this.width * 4)) + (left * 4)) + 2] = b
+                this.imageData.data[((top * (this.width * 4)) + (left * 4)) + 3] = 255
+            }
+        }
+
+        this.ctx.putImageData(this.imageData, 0, 0)
 
     }
 
@@ -50,6 +68,8 @@ export class Display {
             s.y * img.height
         )
     }
+
+
 
     clear() {
         // this.ctx.fillStyle = 'rgba(255,255,255,0.3)';
