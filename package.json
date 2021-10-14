@@ -20,6 +20,7 @@
     "vite": "^2.3.4"
   },
   "dependencies": {
+    "gl-matrix": "^3.4.3",
     "koa": "^2.13.3",
     "koa-static": "^5.0.0"
   }
