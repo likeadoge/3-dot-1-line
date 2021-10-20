@@ -2,7 +2,7 @@ class Device {
     mode: 'pc' | 'mobile'
     width: number
     height: number
-    time: number = 0
+    renderTime: number = 0
 
     constructor() {
         const { width, height } = document.body.getClientRects()[0]
@@ -13,15 +13,19 @@ class Device {
             ? [width, height]
             : [360, 640]
 
-        this.curtime()
+        this.updateRenderTime()
     }
 
     vibrate() {
         return window.navigator.vibrate(200)
     }
 
-    curtime(){
-        this.time = new Date().getTime();
+    updateRenderTime(){
+        this.renderTime = this.getCurTime();
+    }
+
+    getCurTime(){
+        return new Date().getTime() 
     }
 
 }

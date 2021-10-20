@@ -1,5 +1,5 @@
 import { PressButton } from '@/control/components/Button'
-import { Context2D } from '@/utils/canvas'
+import { Context2D } from '@/utils/canvas2d'
 import { device } from '@/utils/device'
 import { TouchListener } from '@/utils/touch'
 import { App } from './App'
@@ -27,7 +27,7 @@ export class Game {
         if (!this.isRun) return
 
         Context2D.main.clear()
-        device.curtime()
+        device.updateRenderTime()
         this.draw()
 
         requestAnimationFrame(() => this.render())
@@ -42,7 +42,6 @@ export class Game {
     private draw(){
         this.button.draw(Context2D.main)
     }
-
 
     async start() {
         this.isRun = true

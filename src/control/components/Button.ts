@@ -1,147 +1,153 @@
-import { CircleFillable, Context2D } from "@/utils/canvas";
+import { DotDrawable, Context2D, ColorTransOption, OpacityTransOptions, ShadowTransOption, ArcDrawable, SizeTransOptions } from "@/utils/canvas2d";
 import { TouchListener } from "@/utils/touch";
 import { device } from '@/utils/device'
 
+export class Transition {
 
+    private status: 0 | 1 = 0
 
-export class ColorTransition {
-    form: [number, number, number, number]
-    to: [number, number, number, number]
+    private last: [number, number]
+    private duration: [number, number]
 
-    constructor(
-        form: [number, number, number, number],
-        to: [number, number, number, number] = form) {
-        this.form = form
-        this.to = to
+    constructor(initial: boolean, duration: [number, number] | number) {
+        this.status = initial ? 1 : 0
+        this.last = [device.getCurTime(), device.getCurTime()]
+        this.duration = duration instanceof Array ? duration : [duration, duration]
     }
 
-    get(t: number) {
-        t = t * t
-        return `rgb(${this.form[0] * (1 - t) + this.to[0] * t
-            },${this.form[1] * (1 - t) + this.to[1] * t
-            },${this.form[2] * (1 - t) + this.to[2] * t
-            },${this.form[3] * (1 - t) + this.to[3] * t
-            })`
-    }
-}
-
-export class ShadowTransition {
-
-    form: [number, number, number]
-    to: [number, number, number]
-    color: string
-
-    constructor(
-        form: [number, number, number],
-        to: [number, number, number],
-        color: string
-    ) {
-        this.form = form
-        this.to = to
-        this.color = color
+    off() {
+        if (this.status === 0) return
+        this.status = 0
+        this.last[this.status] = device.getCurTime()
     }
 
-    get(t: number): [number, number, number, string] {
-        t = t * t
-        return [
-            this.form[0] * (1 - t) + this.to[0] * t,
-            this.form[1] * (1 - t) + this.to[1] * t,
-            this.form[2] * (1 - t) + this.to[2] * t,
-            this.color
-        ]
+    on() {
+        if (this.status === 1) return
+        this.status = 1
+        this.last[this.status] = device.getCurTime()
     }
 
+    trigger() {
+        if (this.status === 0) return this.on()
+        if (this.status === 1) return this.off()
+    }
+
+
+
+    current(): boolean {
+        return !!this.status
+    }
+
+    ratio() {
+        const last = this.last[this.status]
+        const duration = this.duration[this.status]
+        const current = device.getCurTime()
+        const r = (current - last) / duration
+        const ratio = r < 0 ? 0 : r > 1 ? 1 : r
+        return this.status ? ratio : 1 - ratio
+    }
 }
 
 export class PressButton {
 
-    private circleFillOption: CircleFillable = {
-        top: 100,
-        left: 100,
-        size: 30,
-        color: '#66ccff',
-        shadow: [0, 2, 10, `rgba(0,0,0,0.3)`]
-    }
+    private isPressing = new Transition(false, [200, 2000])
 
-    private enable = true
+    private enable = new Transition(true, 200)
 
     private touch = new TouchListener()
 
-    private pressTime: number = 0
-
-    private dropTime: number = 0
-
-    private state: 'pressing' | 'droped' = 'droped'
-
-    private pressDuration = 1000
-
-    private dropDuration = 200
-
     private isDone: boolean = false
 
-    private done: () => void = () => { 
-        console.log('done');
-        device.vibrate()
+    private done: () => void = () => { console.log('done'); device.vibrate() }
+
+
+    private opacity = new OpacityTransOptions(0, 1)
+
+    private pos = { top: 100, left: 100 }
+
+    private size = 30
+
+    private dot: DotDrawable = {} as any
+
+    private dotOps = {
+        color: new ColorTransOption([203, 0, 140], [252, 103, 103]),
+        shadow: new ShadowTransOption([0, 4, 10], [0, 0, 0], [0, 0, 0],
+            new OpacityTransOptions(0.3, 0)
+        )
     }
 
-    private pressColor = new ColorTransition(
-        [203, 0, 140, 255], [252, 103, 103, 255]
-    )
-
-    private dropColor = new ColorTransition(
-        [252, 103, 103, 255], [203, 0, 140, 255]
-    )
-
-    private pressShadow = new ShadowTransition(
-        [0, 4, 10,], [0, 0, 0], `rgba(0,0,0,0.3)`
-    )
-
-    private dropShadow = new ShadowTransition(
-        [0, 0, 0], [0, 4, 10,], `rgba(0,0,0,0.3)`
-    )
-
+    private arc: ArcDrawable = {} as any
+    private arcOps = {
+        size: new SizeTransOptions(0, 2 * Math.PI)
+    }
 
     constructor() {
-        this.touch.top = this.circleFillOption.top - this.circleFillOption.size
-        this.touch.bottom = this.circleFillOption.top + this.circleFillOption.size
-        this.touch.left = this.circleFillOption.left - this.circleFillOption.size
-        this.touch.right = this.circleFillOption.left + this.circleFillOption.size
+        this.touch.top = this.pos.top - this.size
+        this.touch.bottom = this.pos.top + this.size
+        this.touch.left = this.pos.left - this.size
+        this.touch.right = this.pos.left + this.size
 
         this.touch.start = () => {
-            this.pressTime = device.time
-            this.state = 'pressing'
+            this.isPressing.on()
         }
         this.touch.end = () => {
-            this.dropTime = device.time
-            this.state = 'droped'
+            this.isPressing.off()
         }
         this.touch.cancel = () => {
-            this.dropTime = device.time
-            this.state = 'droped'
+            this.isPressing.off()
         }
+    }
+
+    private update() {
+
+        const opacity = this.opacity.get(this.enable.ratio())
+        const ratio = this.isPressing.ratio()
+
+
+        const color = this.dotOps.color.get(ratio)
+        const pos = this.pos
+        const size = this.size
+        const shadow = this.dotOps.shadow.get(ratio)
+
+        shadow[4] = shadow[4] * opacity
+
+        this.dot = {
+            opacity, color, pos, size, shadow
+        }
+
+        this.arc = {
+            pos,
+            size,
+            width: 10,
+            start: -0.5 * Math.PI,
+            end: -0.5 * Math.PI + this.arcOps.size.get(ratio),
+            opacity,
+            color: [252, 103, 103]
+        }
+
     }
 
     draw(context: Context2D) {
-        if (this.enable) {
-            if (this.state === 'droped') {
-                const dur = device.time - this.dropTime
-                const t = (dur < 0 ? 0 : dur > this.dropDuration ? this.dropDuration : dur) / this.dropDuration
-                this.circleFillOption.color = this.dropColor.get(t)
-                this.circleFillOption.shadow = this.dropShadow.get(t)
-                this.isDone = false
-            } else {
-                const dur = device.time - this.pressTime
-                const t = (dur < 0 ? 0 : dur > this.pressDuration ? this.pressDuration : dur) / this.pressDuration
-                this.circleFillOption.color = this.pressColor.get(t)
-                this.circleFillOption.shadow = this.pressShadow.get(t)
+        if ( this.enable.ratio() || this.enable.current()) {
+            this.update()
+            context.arc(this.arc)
+            context.dot(this.dot)
 
-                if (!this.isDone && t >= 1) {
-                    this.done()
-                    this.isDone = true
-                }
-            }
-            context.fillCircle(this.circleFillOption)
+            // context.fillCircle(this.circleFillOption)
         }
-    }
 
+        // console.log(this.isDone)
+
+        const current = this.isPressing.current()
+        const ratio = this.isPressing.ratio()
+        if ((!this.isDone) && ratio >= 1 && current === true) {
+            this.done()
+            this.isDone = true
+        }
+
+        if (this.isDone && (ratio === 0) && (!current)) {
+            this.isDone = false
+        }
+
+    }
 }
