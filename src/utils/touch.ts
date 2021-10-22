@@ -1,21 +1,21 @@
 
-const emit= Symbol('emit')
+const emit = Symbol('emit')
 
 export class TouchListener {
     static list: TouchListener[] = []
 
-    static init(target:HTMLElement){
-        target.addEventListener('touchstart', e =>TouchListener[emit]('start',e))
-        target.addEventListener('touchmove', e =>TouchListener[emit]('move',e))
-        target.addEventListener('touchend', e =>TouchListener[emit]('end',e))
-        target.addEventListener('touchcancel', e =>TouchListener[emit]('cancel',e))
+    static init(target: HTMLElement) {
+        target.addEventListener('touchstart', e => TouchListener[emit]('start', e))
+        target.addEventListener('touchmove', e => TouchListener[emit]('move', e))
+        target.addEventListener('touchend', e => TouchListener[emit]('end', e))
+        target.addEventListener('touchcancel', e => TouchListener[emit]('cancel', e))
     }
 
     static [emit](name: 'start' | 'move' | 'end' | 'cancel', e: TouchEvent) {
-        
-        if(name === 'start') e.preventDefault()
-        if(name === 'move') e.preventDefault()
-        
+
+        if (name === 'start') e.preventDefault()
+        if (name === 'move') e.preventDefault()
+
         if (name !== 'start') {
             TouchListener.list.forEach(listener => {
                 if (listener.active) listener[emit](name, e)
@@ -38,6 +38,8 @@ export class TouchListener {
     top: number = 0
     bottom: number = 0
 
+    lastPos: { top: number, left: number } = { left: this.left, top: this.top }
+
     active: boolean = false
 
     constructor() {
@@ -54,17 +56,21 @@ export class TouchListener {
     }
 
     [emit](name: 'start' | 'move' | 'end' | 'cancel', e: TouchEvent) {
-        
 
         const { clientX: left = 0, clientY: top = 0 } = e.touches[0] ?? {}
 
         if (name === 'start') {
             this.active = true
-        } else if(name === 'end' || name === 'cancel'){
+        } else if (name === 'end' || name === 'cancel') {
             this.active = false
         }
 
         this[name]({ left, top })
+    }
+
+    quit(e?: { left: number, top: number }) {
+        this.active = false
+        this.cancel(e ?? this.lastPos)
     }
 }
 

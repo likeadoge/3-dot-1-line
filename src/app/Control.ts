@@ -1,4 +1,4 @@
-import { PressButton } from '@/control/components/Button'
+import { MoveButton } from '@/control/components/Button'
 import { Context2D } from '@/utils/canvas2d'
 import { device } from '@/utils/device'
 import { TouchListener } from '@/utils/touch'
@@ -37,7 +37,7 @@ export class Game {
         this.start()
     }
 
-    private button = new PressButton()
+    private button = new MoveButton()
 
     private draw(){
         this.button.draw(Context2D.main)

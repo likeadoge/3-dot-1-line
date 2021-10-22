@@ -57,7 +57,14 @@ export class Context2D extends CanvasContext {
         }
     }
 
-    strokeStyle({ color, shadow, opacity }: Styleable) {
+    strokeStyle({ color, shadow, opacity, dash, lineJoin, dashOffset, cap }: StrokeStyle) {
+
+        this.ctx.setLineDash(dash ? dash : [])
+
+        if (lineJoin) this.ctx.lineJoin = lineJoin
+        if (dashOffset) this.ctx.lineDashOffset = dashOffset
+       this.ctx.lineCap = cap ?? 'butt'
+
         this.ctx.strokeStyle = `rgba(${color[0]},${color[1]},${color[2]},${opacity})`
         if (shadow) {
             this.ctx.shadowOffsetX = shadow[0]
@@ -87,6 +94,18 @@ export class Context2D extends CanvasContext {
         this.ctx.stroke()
     }
 
+    line(op: LineDrawable) {
+        this.ctx.beginPath()
+        this.strokeStyle(op)
+        const { from, to, width } = op
+        
+        this.ctx.moveTo(from.left,from.top)
+        this.ctx.lineTo(to.left,to.top);
+        this.ctx.lineWidth = width
+        this.ctx.stroke()
+
+    }
+
     clear() {
         this.ctx.clearRect(0, 0, this.width, this.height)
     }
@@ -98,18 +117,32 @@ export interface Styleable {
     shadow?: [number, number, number, [number, number, number], number]
 }
 
+export interface StrokeStyle extends Styleable {
+    width: number,
+    dash?: number[]
+    dashOffset?: number,
+    lineJoin?: 'bevel' | 'round' | 'miter'
+    cap?: 'butt' | 'round' | "square"
+}
+
 export interface DotDrawable extends Styleable {
     size: number,
     pos: { top: number, left: number, }
 }
 
-export interface ArcDrawable extends Styleable {
+export interface ArcDrawable extends StrokeStyle {
     size: number,
     start: number,
     end: number,
-    width: number,
     clock?: boolean,
     pos: { top: number, left: number, }
+}
+
+export interface LineDrawable extends StrokeStyle {
+    from: { top: number, left: number },
+    to: { top: number, left: number }
+    width: number,
+
 }
 
 export class ColorTransOption {
