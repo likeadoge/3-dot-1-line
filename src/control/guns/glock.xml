@@ -1,0 +1,35 @@
+<weapon name="glock-17">
+    <version>0.0.1</version>
+    <status>
+        <!-- 常量 -->
+        <最大子弹数量>17</最大子弹数量>
+        <!-- 变量 -->
+        <弹匣内子弹数 type="int">17</弹匣内子弹数>
+        <空挂 type="boolen">false</空挂>
+        <膛内是否有子弹 type="boolen">false</膛内是否有子弹>
+        <膛内子弹否有击发 type="boolen">false</膛内子弹否有击发>
+        <是否上膛  type="boolen">false</是否上膛>
+    </status>
+    <parts>
+        <扳机></扳机>
+        <滑套></滑套>
+        <弹匣></弹匣>
+        <握把></握把>
+        <空挂></空挂>
+    </parts>
+    <controls>
+        <PressButton>弹匣释放</PressButton>
+        <PressButton>空挂释放</PressButton>
+        <MoveButton>后拉滑套</MoveButton>
+        <MoveButton>安装弹匣</MoveButton>
+    </controls>
+
+    <state name="初始">
+        <扳机></扳机>
+        <滑套></滑套>
+        <弹匣></弹匣>
+        <握把></握把>
+        <空挂></空挂>
+    </state>
+    
+</weapon>

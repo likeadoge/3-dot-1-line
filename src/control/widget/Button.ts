@@ -1,7 +1,7 @@
 import { DotDrawable, Context2D, ColorTransOption, OpacityTransOptions, ShadowTransOption, ArcDrawable, SizeTransOptions, LineDrawable } from "@/utils/canvas2d";
 import { TouchListener } from "@/utils/touch";
 import { device } from '@/utils/device'
-import { TouchTimeState } from "@/state/TouchTimeState";
+import { Widget } from './base'
 
 export class Transition {
 
@@ -33,8 +33,6 @@ export class Transition {
         if (this.status === 1) return this.off()
     }
 
-
-
     current(): boolean {
         return !!this.status
     }
@@ -49,7 +47,7 @@ export class Transition {
     }
 }
 
-export class PressButton {
+export class PressButton extends Widget {
 
     protected isPressing = new Transition(false, [200, 2000])
 
@@ -80,6 +78,7 @@ export class PressButton {
     }
 
     constructor() {
+        super()
         this.touch.top = this.pos.top - this.size
         this.touch.bottom = this.pos.top + this.size
         this.touch.left = this.pos.left - this.size
@@ -260,7 +259,7 @@ export class MoveButton extends PressButton {
         to: this.toPos,
         color: [0, 0, 0],
         opacity: 0.3,
-        dash: [10,20],
+        dash: [10, 20],
         cap: 'round',
         width: 10
     }

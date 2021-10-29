@@ -1,4 +1,5 @@
 import { device } from "./device"
+import { Pos, Size } from "./types"
 
 export abstract class CanvasContext {
 
@@ -13,6 +14,8 @@ export abstract class CanvasContext {
     }
 
 }
+
+
 
 export class Context2D extends CanvasContext {
 
@@ -47,7 +50,7 @@ export class Context2D extends CanvasContext {
         this.ctx = ctx
     }
 
-    fillStyle({ color, shadow, opacity }: Styleable) {
+    private fillStyle({ color, shadow, opacity }: Styleable) {
         this.ctx.fillStyle = `rgba(${color[0]},${color[1]},${color[2]},${opacity})`
         if (shadow) {
             this.ctx.shadowOffsetX = shadow[0]
@@ -57,13 +60,13 @@ export class Context2D extends CanvasContext {
         }
     }
 
-    strokeStyle({ color, shadow, opacity, dash, lineJoin, dashOffset, cap }: StrokeStyle) {
+    private strokeStyle({ color, shadow, opacity, dash, lineJoin, dashOffset, cap }: StrokeStyle) {
 
         this.ctx.setLineDash(dash ? dash : [])
 
         if (lineJoin) this.ctx.lineJoin = lineJoin
         if (dashOffset) this.ctx.lineDashOffset = dashOffset
-       this.ctx.lineCap = cap ?? 'butt'
+        this.ctx.lineCap = cap ?? 'butt'
 
         this.ctx.strokeStyle = `rgba(${color[0]},${color[1]},${color[2]},${opacity})`
         if (shadow) {
@@ -73,7 +76,6 @@ export class Context2D extends CanvasContext {
             this.ctx.shadowColor = `rgba(${shadow[3][0]},${shadow[3][1]},${shadow[3][2]},${shadow[4]})`;
         }
     }
-
 
     dot(op: DotDrawable) {
         this.ctx.beginPath()
@@ -98,14 +100,19 @@ export class Context2D extends CanvasContext {
         this.ctx.beginPath()
         this.strokeStyle(op)
         const { from, to, width } = op
-        
-        this.ctx.moveTo(from.left,from.top)
-        this.ctx.lineTo(to.left,to.top);
+
+        this.ctx.moveTo(from.left, from.top)
+        this.ctx.lineTo(to.left, to.top);
         this.ctx.lineWidth = width
         this.ctx.stroke()
 
     }
 
+    image(op: ImageDrawable) {
+        this.ctx.beginPath()
+        const { pos, image } = op
+        this.ctx.drawImage(image, pos.left, pos.top)
+    }
     clear() {
         this.ctx.clearRect(0, 0, this.width, this.height)
     }
@@ -143,6 +150,12 @@ export interface LineDrawable extends StrokeStyle {
     to: { top: number, left: number }
     width: number,
 
+}
+
+export interface ImageDrawable {
+    image: ImageBitmap,
+    pos: Pos,
+    size: Size
 }
 
 export class ColorTransOption {
@@ -246,3 +259,4 @@ export class OpacityTransOptions {
         return this.form * (1 - t) + this.to * t
     }
 }
+
